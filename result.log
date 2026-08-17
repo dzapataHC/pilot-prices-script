@@ -1,0 +1,11 @@
+{
+  "data": null,
+  "url": "/api/tms/data/fuel-provider-fuel-price-list",
+  "serverTime": "2026-08-17T02:06:59.049Z",
+  "timeTook": "00:00:00",
+  "error": {
+    "code": 9,
+    "message": "dto required",
+    "additionalInfo": ""
+  }
+}

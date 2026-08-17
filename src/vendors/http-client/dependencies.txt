@@ -1,0 +1,3 @@
+pnpm add axios
+pnpm add bottleneck
+pnpm add p-retry

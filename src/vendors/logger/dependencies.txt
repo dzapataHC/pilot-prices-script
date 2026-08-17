@@ -1,0 +1,2 @@
+pnpm add pino
+pnpm add pino-pretty
