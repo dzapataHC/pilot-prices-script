@@ -18,11 +18,13 @@ export async function extractData(source: CsvDataSource): Promise<PriceRow[]> {
     const storeId = descriptors['Store#'];
     const retailPrice = descriptors['Retail Price'];
     const effectiveDate = descriptors['Effective Date'];
-    const value = {store: storeId?.value, price: retailPrice?.value};
+    const value = {store: storeId?.value, price: retailPrice?.value, date: effectiveDate?.value};
 
     if (!value) continue;
 
-    if (new Date(effectiveDate!.value).getDate() === new Date().getDate()){
+    const {date} = value;
+
+    if (new Date(date!).getDate() === new Date().getDate()){
       throw new Error('Target date is actual date.')
     }
 
