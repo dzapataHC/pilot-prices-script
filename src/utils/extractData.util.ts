@@ -16,7 +16,7 @@ export async function extractData(source: CsvDataSource): Promise<PriceRow[]> {
     };
 
     const storeId = descriptors['Store#'];
-    const retailPrice = descriptors['Retail Price'];
+    const retailPrice = descriptors['CP Price'];
     const effectiveDate = descriptors['Effective Date'];
     const value = {store: storeId?.value, price: retailPrice?.value, date: effectiveDate?.value};
 

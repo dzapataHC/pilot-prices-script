@@ -1,5 +1,6 @@
 import fs from 'fs';
 import {join} from 'path';
+import 'dotenv/config';
 
 import {CsvDataSource} from '../lib/CsvDataSource';
 import {getDitatToken} from '../lib/getDitatToken';
@@ -15,6 +16,7 @@ const FILENAME = 'pq222100US.csv';
 const TARGET_LOCATION = join(__dirname, '../../files', FILENAME);
 
 export class App implements Application {
+  private listKey: number = 0;
   constructor(
     private _logger = createLogger(),
     private _client = new SftpClient(),
@@ -80,7 +82,9 @@ export class App implements Application {
       const res = await http.post(
         '/api/tms/data/fuel-provider-fuel-price-list',
         body,
-      );
+      ) as {data: {entityGraph: {fuelProviderFuelPriceListKey: number}}}
+
+      this.listKey = res.data.entityGraph.fuelProviderFuelPriceListKey
       const result = JSON.stringify(res, null, 2);
 
       fs.writeFile(
@@ -100,6 +104,29 @@ export class App implements Application {
     }
   }
 
+  async addNote(key: number){
+    try {
+      const note = 'Imported by Huecker Consulting';
+      const token = await getDitatToken();
+      const http = createHttpClient(token);
+      const body = {
+        contentType: 0,
+        createdByUserName: '',
+        createdOn: new Date().toISOString(),
+        groupKeys: [],
+        isPrivate: false,
+        isSystem: true,
+        note,
+        noteKey: 0,
+      }
+  
+      await http.post(`/api/tms/data/fuel-provider-fuel-price-list/${key}/note`, body)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this._logger.error(message);
+    }
+  }
+
   async disconnect(): Promise<void> {
     await this._client.disconnect();
   }
@@ -109,6 +136,7 @@ export class App implements Application {
     await this.connect();
     await this.saveFile();
     await this.uploadFile();
+    await this.addNote(this.listKey)
     await this.disconnect();
   }
 }
