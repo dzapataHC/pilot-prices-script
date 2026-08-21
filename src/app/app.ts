@@ -121,6 +121,7 @@ export class App implements Application {
       }
   
       await http.post(`/api/tms/data/fuel-provider-fuel-price-list/${key}/note`, body)
+      this._logger.info('Injection note has been added correctly.')
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this._logger.error(message);
