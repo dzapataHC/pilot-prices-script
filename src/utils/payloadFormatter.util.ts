@@ -1,7 +1,6 @@
 export interface PayloadFormat {
   fuelProviderFuelPriceListKey: number; // RANDOM NEGATIVE
   fuelProviderFuelPriceListId: string;
-  createdBy: number;
   createdOn: string; // ISO STRING
   description: string;
   priceActiveDate: string; // ISO STRING

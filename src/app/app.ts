@@ -11,6 +11,7 @@ import {buildPayload} from '../utils/payloadParser.util';
 import {createHttpClient} from '../vendors/http-client/http-client.factory';
 import {createLogger} from '../vendors/logger';
 import {Application} from './app.types';
+import { dateToISO } from '../utils/dateToISO';
 
 const FILENAME = 'pq222100US.csv';
 const TARGET_LOCATION = join(__dirname, '../../files', FILENAME);
@@ -88,6 +89,15 @@ export class App implements Application {
       const result = JSON.stringify(res, null, 2);
 
       fs.writeFile(
+        join(__dirname, '../../files/request-body.json'),
+        JSON.stringify(body, null, 2),
+        (err) => {
+          if (err) throw new Error('Failed to save body')
+            console.log('Body Saved')
+        }
+      )
+
+      fs.writeFile(
         join(__dirname, '../../result.log'),
         result,
         'utf-8',
@@ -112,7 +122,7 @@ export class App implements Application {
       const body = {
         contentType: 0,
         createdByUserName: '',
-        createdOn: new Date().toISOString(),
+        createdOn: dateToISO(new Date()),
         groupKeys: [],
         isPrivate: false,
         isSystem: true,

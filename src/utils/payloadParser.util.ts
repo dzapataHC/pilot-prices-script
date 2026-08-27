@@ -1,4 +1,5 @@
 import {createNegativeInt} from '../vendors/create-negative-number/createNegativeNumber';
+import { dateToISO } from './dateToISO';
 import {PayloadFormat} from './payloadFormatter.util';
 
 interface Price {
@@ -16,13 +17,13 @@ function getFormattedDate(): string {
   return formatted;
 }
 
-function normalizeStoreId(id: number): string {
+export function normalizeStoreId(id: number): string {
   return String(id).padStart(3, '0');
 }
 
 const today = new Date();
 
-const priceActiveDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate() + 1).padStart(2, '0')}T00:00:00`;
+const priceActiveDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate() + 1).padStart(2, '0')}T00:00:00.000Z`;
 
 export function buildPayload(prices: Price[]): PayloadFormat {
   const listKey = createNegativeInt();
@@ -31,13 +32,13 @@ export function buildPayload(prices: Price[]): PayloadFormat {
   const body = {
     fuelProviderFuelPriceListKey: listKey,
     fuelProviderFuelPriceListId: '',
-    createdBy: 646,
-    createdOn: new Date().toISOString(),
+    createdBy: 0,
+    createdOn: dateToISO(new Date()),
     description: `${getFormattedDate()} Pricing`,
     priceActiveDate,
     providerType: 2,
     rowVersion: '',
-    updatedOn: new Date().toISOString(),
+    updatedOn: dateToISO(new Date()),
   };
 
   const lines = prices.map((price, _i) => ({
