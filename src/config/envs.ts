@@ -17,6 +17,7 @@ const envSchema = z.object({
   STORE_ID: z.coerce.string(),
   PRICE: z.coerce.string(),
   EFFECTIVE_DATE: z.coerce.string(),
+  FILE_NAME: z.coerce.string(),
 });
 
 const result = envSchema.safeParse(process.env);

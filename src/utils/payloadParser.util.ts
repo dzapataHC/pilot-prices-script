@@ -30,7 +30,7 @@ export function buildPayload(prices: Price[]): PayloadFormat {
     fuelProviderFuelPriceListId: '',
     createdBy: 0,
     createdOn: dateToISO(new Date()),
-    description: `${tomorrow.format('DD/MM/YYYY')} Pricing`,
+    description: `${tomorrow.format('MM/DD/YYYY')} Pricing`,
     priceActiveDate,
     providerType: 2,
     rowVersion: '',

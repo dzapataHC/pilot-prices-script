@@ -13,8 +13,9 @@ import {buildPayload} from '../utils/payloadParser.util';
 import {createHttpClient} from '../vendors/http-client/http-client.factory';
 import {createLogger} from '../vendors/logger';
 import {Application} from './app.types';
+import { envs } from '../config/envs';
 
-const FILENAME = 'pq222100US.csv';
+const FILENAME = envs.FILE_NAME;
 const TARGET_LOCATION = join(__dirname, '../../files', FILENAME);
 
 export class App implements Application {
