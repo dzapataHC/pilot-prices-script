@@ -3,6 +3,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import {join} from 'path';
 
+import {envs} from '../config/envs';
 import {CsvDataSource} from '../lib/CsvDataSource';
 import {getDitatToken} from '../lib/getDitatToken';
 import {SftpClient} from '../lib/SftpClient';
@@ -13,7 +14,6 @@ import {buildPayload} from '../utils/payloadParser.util';
 import {createHttpClient} from '../vendors/http-client/http-client.factory';
 import {createLogger} from '../vendors/logger';
 import {Application} from './app.types';
-import { envs } from '../config/envs';
 
 const FILENAME = envs.FILE_NAME;
 const TARGET_LOCATION = join(__dirname, '../../files', FILENAME);
