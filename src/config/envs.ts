@@ -7,7 +7,7 @@ const envSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   SFTP_HOST: z.coerce.string().min(1),
-  SFTP_PORT: z.coerce.string().min(1),
+  SFTP_PORT: z.coerce.number(),
   SFTP_USER: z.coerce.string().min(1),
   SFTP_PASS: z.coerce.string().min(1),
   DITAT_BASE: z.coerce.string().min(1),
