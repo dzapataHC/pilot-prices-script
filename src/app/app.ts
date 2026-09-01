@@ -1,23 +1,25 @@
+import 'dotenv/config';
+
 import fs from 'fs';
 import {join} from 'path';
-import 'dotenv/config';
 
 import {CsvDataSource} from '../lib/CsvDataSource';
 import {getDitatToken} from '../lib/getDitatToken';
 import {SftpClient} from '../lib/SftpClient';
+import {dateToISO} from '../utils/dateToISO';
 import {extractData} from '../utils/extractData.util';
 import {PayloadFormat} from '../utils/payloadFormatter.util';
 import {buildPayload} from '../utils/payloadParser.util';
 import {createHttpClient} from '../vendors/http-client/http-client.factory';
 import {createLogger} from '../vendors/logger';
 import {Application} from './app.types';
-import { dateToISO } from '../utils/dateToISO';
 
 const FILENAME = 'pq222100US.csv';
 const TARGET_LOCATION = join(__dirname, '../../files', FILENAME);
 
 export class App implements Application {
   private listKey: number = 0;
+  private ditatToken = '';
   constructor(
     private _logger = createLogger(),
     private _client = new SftpClient(),
@@ -77,25 +79,24 @@ export class App implements Application {
     try {
       this._logger.info('Uploading File');
       const body = await this.transformFile();
-      const token = await getDitatToken();
-      const http = createHttpClient(token);
+      const http = createHttpClient(this.ditatToken);
 
-      const res = await http.post(
+      const res = (await http.post(
         '/api/tms/data/fuel-provider-fuel-price-list',
         body,
-      ) as {data: {entityGraph: {fuelProviderFuelPriceListKey: number}}}
+      )) as {data: {entityGraph: {fuelProviderFuelPriceListKey: number}}};
 
-      this.listKey = res.data.entityGraph.fuelProviderFuelPriceListKey
+      this.listKey = res.data.entityGraph.fuelProviderFuelPriceListKey;
       const result = JSON.stringify(res, null, 2);
 
       fs.writeFile(
         join(__dirname, '../../files/request-body.json'),
         JSON.stringify(body, null, 2),
-        (err) => {
-          if (err) throw new Error('Failed to save body')
-            console.log('Body Saved')
-        }
-      )
+        err => {
+          if (err) throw new Error('Failed to save body');
+          console.log('Body Saved');
+        },
+      );
 
       fs.writeFile(
         join(__dirname, '../../result.log'),
@@ -114,11 +115,10 @@ export class App implements Application {
     }
   }
 
-  async addNote(key: number){
+  async addNote(key: number) {
     try {
       const note = 'Imported by Huecker Consulting';
-      const token = await getDitatToken();
-      const http = createHttpClient(token);
+      const http = createHttpClient(this.ditatToken);
       const body = {
         contentType: 0,
         createdByUserName: '',
@@ -128,10 +128,13 @@ export class App implements Application {
         isSystem: true,
         note,
         noteKey: 0,
-      }
-  
-      await http.post(`/api/tms/data/fuel-provider-fuel-price-list/${key}/note`, body)
-      this._logger.info('Injection note has been added correctly.')
+      };
+
+      await http.post(
+        `/api/tms/data/fuel-provider-fuel-price-list/${key}/note`,
+        body,
+      );
+      this._logger.info('Injection note has been added correctly.');
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this._logger.error(message);
@@ -142,12 +145,19 @@ export class App implements Application {
     await this._client.disconnect();
   }
 
+  async init(): Promise<void> {
+    const token = await getDitatToken();
+
+    this.ditatToken = token.access_token;
+  }
+
   async run(): Promise<void> {
     this._logger.info('[+] Initiating Script\n');
+    await this.init();
     await this.connect();
     await this.saveFile();
     await this.uploadFile();
-    await this.addNote(this.listKey)
+    await this.addNote(this.listKey);
     await this.disconnect();
   }
 }

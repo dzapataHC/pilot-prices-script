@@ -1,5 +1,10 @@
-export function dateToISO(date: Date, hours = 4, minutes = 24, seconds = 5, ms = 23) {
-
+export function dateToISO(
+  date: Date,
+  hours = 4,
+  minutes = 24,
+  seconds = 5,
+  ms = 23,
+) {
   const d = new Date(date);
 
   d.setUTCHours(hours, minutes, seconds, ms);

@@ -1,7 +1,8 @@
-import { getDitatToken } from "./lib/getDitatToken"
+import 'dayjs/locale/en';
 
-(async () => {
-  const token = await getDitatToken();
+import dayjs from 'dayjs';
 
-  console.log(token)
-})()
+(() => {
+  const tomorrow = dayjs().add(1, 'd').format('DD/MM/YYYY');
+  console.log(tomorrow);
+})();

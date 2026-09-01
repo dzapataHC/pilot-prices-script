@@ -23,7 +23,7 @@ export class AxiosHttpClient implements IHttpClient {
     this.instance = axios.create({
       baseURL: baseUrl,
       headers: {
-        Authorization: `Ditat-Token ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });

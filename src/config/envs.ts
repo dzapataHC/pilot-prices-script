@@ -1,25 +1,32 @@
 import 'dotenv/config';
 
-interface IEnvs {
-  SFTP_HOST: string;
-  SFTP_PORT: number;
-  SFTP_USER: string;
-  SFTP_PASS: string;
-  DITAT_BASE: string;
-  DITAT_ACCOUNT: string;
-  DITAT_USERNAME: string;
-  DITAT_PASSWORD: string;
+import z from 'zod';
+
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
+  SFTP_HOST: z.coerce.string().min(1),
+  SFTP_PORT: z.coerce.string().min(1),
+  SFTP_USER: z.coerce.string().min(1),
+  SFTP_PASS: z.coerce.string().min(1),
+  DITAT_BASE: z.coerce.string().min(1),
+  DITAT_ACCOUNT: z.coerce.string().min(1),
+  DITAT_CLIENT_ID: z.coerce.string().min(1),
+  DITAT_CLIENT_SECRET: z.coerce.string().min(1),
+  STORE_ID: z.coerce.string(),
+  PRICE: z.coerce.string(),
+  EFFECTIVE_DATE: z.coerce.string(),
+});
+
+const result = envSchema.safeParse(process.env);
+
+if (!result.success) {
+  console.error('Invalid environment variables');
+  console.error(z.prettifyError(result.error));
+  process.exit(1);
 }
 
-const variables = process.env;
+console.log('[+] All variables loaded.');
 
-export const envs: IEnvs = {
-  SFTP_HOST: variables.SFTP_HOST as string,
-  SFTP_PORT: variables.SFTP_PORT as unknown as number,
-  SFTP_USER: variables.SFTP_USER as string,
-  SFTP_PASS: variables.SFTP_PASS as string,
-  DITAT_BASE: variables.DITAT_BASE as string,
-  DITAT_ACCOUNT: variables.DITAT_ACCOUNT as string,
-  DITAT_USERNAME: variables.DITAT_USERNAME as string,
-  DITAT_PASSWORD: variables.DITAT_PASSWORD as string,
-};
+export const envs = result.data;

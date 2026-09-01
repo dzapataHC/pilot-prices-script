@@ -1,5 +1,9 @@
+import 'dayjs/locale/en';
+
+import dayjs from 'dayjs';
+
 import {createNegativeInt} from '../vendors/create-negative-number/createNegativeNumber';
-import { dateToISO } from './dateToISO';
+import {dateToISO} from './dateToISO';
 import {PayloadFormat} from './payloadFormatter.util';
 
 interface Price {
@@ -7,23 +11,15 @@ interface Price {
   price: string;
 }
 
-function getFormattedDate(): string {
-  const d = new Date();
-  const date = String(d.getDate() + 1).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  const formatted = `${month}/${date}/${year}`;
-
-  return formatted;
-}
-
 export function normalizeStoreId(id: number): string {
   return String(id).padStart(3, '0');
 }
 
-const today = new Date();
+const tomorrow = dayjs().add(1, 'd');
+const formattedTomorrow = tomorrow.format().slice(0, 10);
+const sufix = 'T00:00:00.000Z';
 
-const priceActiveDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate() + 1).padStart(2, '0')}T00:00:00.000Z`;
+const priceActiveDate = `${formattedTomorrow}${sufix}`;
 
 export function buildPayload(prices: Price[]): PayloadFormat {
   const listKey = createNegativeInt();
@@ -34,7 +30,7 @@ export function buildPayload(prices: Price[]): PayloadFormat {
     fuelProviderFuelPriceListId: '',
     createdBy: 0,
     createdOn: dateToISO(new Date()),
-    description: `${getFormattedDate()} Pricing`,
+    description: `${tomorrow.format('DD/MM/YYYY')} Pricing`,
     priceActiveDate,
     providerType: 2,
     rowVersion: '',

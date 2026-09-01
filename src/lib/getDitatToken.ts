@@ -1,24 +1,30 @@
 import {envs} from '../config/envs';
 
-export async function getDitatToken(): Promise<string> {
+interface OAuthProps {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+export async function getDitatToken(): Promise<OAuthProps> {
   const account = envs.DITAT_ACCOUNT;
-  const username = envs.DITAT_USERNAME;
-  const pass = envs.DITAT_PASSWORD;
+  const clientID = envs.DITAT_CLIENT_ID;
+  const clientSecret = envs.DITAT_CLIENT_SECRET;
+  const endpoint = `${envs.DITAT_BASE}/identity-provider/${account}/connect/token`;
 
-  const basicAuth = Buffer.from(`${username}:${pass}`, 'utf-8').toString(
-    'base64',
-  );
-
-  const loginAttempt = await fetch(`${envs.DITAT_BASE}/api/tms/auth/login`, {
+  const loginAttempt = await fetch(endpoint, {
     method: 'POST',
     headers: {
-      'Ditat-Application-Role': 'Login to TMS',
-      'Ditat-Account-Id': account,
-      Authorization: `Basic ${basicAuth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: clientID,
+      client_secret: clientSecret,
+    }),
   });
 
-  const token = await loginAttempt.text();
+  const token = (await loginAttempt.json()) as OAuthProps;
 
   return token;
 }
